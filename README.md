@@ -1,24 +1,103 @@
-import cv2
+<h3>Input</h3>
 
-# Load the cascade
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+import pandas as pd
+from sklearn import datasets
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 
-# Read the input image
-image = cv2.imread('input_face.jpg')
+iris = datasets.load_iris()
+X = iris.data
+y = iris.target
 
-# Convert to grayscale
-gray_image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
 
-# Detect faces
-faces = face_cascade.detectMultiScale(gray_image, scaleFactor=1.1, minNeighbors=5)
+models = {
+    'Random Forest': RandomForestClassifier(),
+    'Support Vector Machine': SVC(),
+    'K-Nearest Neighbors': KNeighborsClassifier(),
+    'Decision Tree': DecisionTreeClassifier()
+}
 
-# Draw rectangles around detected faces
-for (x, y, w, h) in faces:
-    cv2.rectangle(image, (x, y), (x + w, y + h), (255, 0, 0), 2)
+results = {}
 
-# Display the output
-cv2.imshow('Detected Faces', image)
+for model_name, model in models.items():
+    model.fit(X_train, y_train)
+    y_pred = model.predict(X_test)
+    
+    accuracy = accuracy_score(y_test, y_pred)
+    report = classification_report(y_test, y_pred, target_names=iris.target_names)
+    
 
-# Wait for a key press and close all windows
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+    results[model_name] = {
+        'Accuracy': accuracy,
+        'Classification Report': report
+    }
+
+for model_name, metrics in results.items():
+    print(f"Model: {model_name}")
+    print(f"Accuracy: {metrics['Accuracy']:.2f}")
+    print("Classification Report:")
+    print(metrics['Classification Report'])
+    print("-" * 60)
+
+<h3>output</h3
+              Model: Random Forest
+Accuracy: 1.00
+Classification Report:
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        15
+  versicolor       1.00      1.00      1.00        15
+   virginica       1.00      1.00      1.00        15
+
+    accuracy                           1.00        45
+   macro avg       1.00      1.00      1.00        45
+weighted avg       1.00      1.00      1.00        45
+
+------------------------------------------------------------
+Model: Support Vector Machine
+Accuracy: 1.00
+Classification Report:
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        15
+  versicolor       1.00      1.00      1.00        15
+   virginica       1.00      1.00      1.00        15
+
+    accuracy                           1.00        45
+   macro avg       1.00      1.00      1.00        45
+weighted avg       1.00      1.00      1.00        45
+
+------------------------------------------------------------
+Model: K-Nearest Neighbors
+Accuracy: 0.98
+Classification Report:
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        15
+  versicolor       0.94      1.00      0.97        15
+   virginica       1.00      0.93      0.97        15
+
+    accuracy                           0.98        45
+   macro avg       0.98      0.98      0.98        45
+weighted avg       0.98      0.98      0.98        45
+
+------------------------------------------------------------
+Model: Decision Tree
+Accuracy: 1.00
+Classification Report:
+              precision    recall  f1-score   support
+
+      setosa       1.00      1.00      1.00        15
+  versicolor       1.00      1.00      1.00        15
+   virginica       1.00      1.00      1.00        15
+
+    accuracy                           1.00        45
+   macro avg       1.00      1.00      1.00        45
+weighted avg       1.00      1.00      1.00        45
+
+------------------------------------------------------------
